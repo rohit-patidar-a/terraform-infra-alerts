@@ -2,13 +2,28 @@
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Sid": "LambdasPolicy",
       "Effect": "Allow",
       "Action": [
+        "tag:GetResources",
+        "tag:TagResources",
+        "dynamodb:TagResource",
+        "ec2:CreateTags",
+        "elasticloadbalancing:AddTags",
+        "kms:TagResource",
+        "lambda:TagResource",
+        "s3:PutBucketTagging",
+        "s3:GetBucketTagging",
+        "rds:AddTagsToResource",
         "logs:CreateLogGroup",
         "logs:CreateLogStream",
-        "logs:PutLogEvents"
+        "logs:DescribeLogGroups",
+        "logs:ListTagsLogGroup",
+        "logs:PutLogEvents",
+        "logs:PutRetentionPolicy",
+        "logs:TagLogGroup"
       ],
-      "Resource": "arn:aws:logs:*:*:*"
+      "Resource": "*"
     }
   ]
 }
