@@ -109,20 +109,6 @@ def lambda_handler(event, context):
                 "short": False
             }]
         }]
-    elif json_msg.get('ElastiCache:SnapshotComplete'):
-        event_src = 'elasticache'
-        attachments = [{
-            "text": "Details",
-            "fallback": message,
-            "color": "good",
-            "fields": [{
-                "title": "Event",
-                "value": "ElastiCache Snapshot"
-            }, {
-                "title": "Message",
-                "value": "Snapshot Complete"
-            }]
-        }]
     elif re.match("S3", sns.get('Subject') or ''):
         event_src = 's3'
         attachments = [{
@@ -144,26 +130,6 @@ def lambda_handler(event, context):
                 "title": "Details",
                 "value": "<{0}|{1}>".format(title_str, title_lnk_str)
             })
-    elif json_msg.get('source') == 'aws.codepipeline':
-        event_src = 'codepipeline'
-        message = json_msg.get('detail-type')
-        event_cond = json_msg.get('detail').get('state')
-        color_map = {
-            'STARTED': 'good',
-            'SUCCEEDED': 'good',
-            'FAILED': 'danger'
-        }
-        attachments = [{
-            'fallback': json_msg.get('detail-type'),
-            'color': color_map[event_cond],
-            "fields": [{
-                "title": "Pipeline",
-                "value": json_msg.get('detail').get('pipeline')
-            }, {
-                "title": "State",
-                "value": json_msg.get('detail').get('state')
-            }]
-        }]
     else:
         event_src = 'other'
 
@@ -190,8 +156,10 @@ def lambda_handler(event, context):
         payload['attachments'] = attachments
     print('DEBUG PAYLOAD:', json.dumps(payload))
 
-    webhook_url = config['webhook_url'] if re.match('^https://', config['webhook_url']) \
+    webhook_url = config['webhook_url'] \
+        if re.match('^https://', config['webhook_url']) \
         else f"https://{config['webhook_url']}"
+    print('DEBUG URL:', webhook_url)
     r = requests.post(webhook_url, json=payload)
-
+    print('DEBUG STATUS:', r)
     return r.status_code
